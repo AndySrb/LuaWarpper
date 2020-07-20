@@ -1,0 +1,62 @@
+// luaexample.cpp
+#include <iostream>
+#include <map>
+
+#ifdef __cplusplus
+# include <lua5.2/lua.hpp>
+#else
+# include <lua5.2/lua.h>
+# include <lua5.2/lualib.h>
+# include <lua5.2/lauxlib.h>
+#endif
+
+#include "luaLoader.h"
+
+template <class T>
+void MRKUSED(T)
+{}
+
+bool CheckLua(lua_State *L, int r)
+{
+	if(r != LUA_OK)
+	{
+	std::string errormsg = lua_tostring(L, -1);
+	std::cout << errormsg << std::endl;
+	return false;
+	}
+	return true;
+}
+
+
+typedef luaLoader::L_ReturnType L_ReturnType;
+
+
+int main(int argc, char* argv[])
+{
+	MRKUSED(argc);
+	MRKUSED(argv);
+
+	std::string filename = "LuaFiles.lua";
+
+	// initialization
+	lua_State *L = luaL_newstate();
+	luaL_openlibs(L);
+
+	luaLoader luaLoad(L);
+	if (CheckLua(L,luaL_dofile(L,filename.c_str())))
+	{
+		luaLoad.readGlobalValue("intVal");
+		int val = luaLoad;
+		std::cout << "Value read form lua: " << val << std::endl;
+
+		luaLoad.readFromTable("Table","Int");
+		int TableVal = luaLoad;
+		std::cout << "Value read from lua Table: " << TableVal << std::endl;
+	}
+ 
+
+	// cleanup
+	lua_close(L);
+	std::cin.get(); // Use this insead std::system("")
+	return 0;
+}

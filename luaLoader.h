@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <string>
 
 #ifdef __cplusplus
 # include <lua5.2/lua.hpp>
@@ -45,6 +46,13 @@ class luaLoader
 		void readFromTable(const char *table, const char *value);
 
 
+		//To get string after declarating it you have to use it like 
+		//	luaLoader lua(L);
+		//
+		//	std::sting str = "";
+		//	lua.getGlobalValue("stringExample");
+		//	str = std::string(lua);
+		//
 		operator std::string()
 		{
 		if (m_temp.m_type == L_ReturnType::STRING)

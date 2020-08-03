@@ -2,7 +2,7 @@
 
 luaLoader::luaLoader(lua_State *L)
 {
-	std::cout << "[luaLoader] luaLoader()" << std::endl;
+	std::cout << "[luaLoader] luaLoader(lua_State *L)" << std::endl;
 	this->L = L;
 	
 	m_temp.m_type = L_ReturnType::NONE;

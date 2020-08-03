@@ -49,6 +49,17 @@ int main(int argc, char* argv[])
 		int val = luaLoad;
 		std::cout << "Value read form lua: " << val << std::endl;
 
+		//This is intended way of getting string from lua;
+		luaLoad.readFromTable("Table","Name");
+		std::string str = luaLoad;
+		std::cout << "Value read form lua Table: " << str << std::endl;
+		
+		//If you allredy declared std::string this is the way
+			//std::string str = "";
+			//luaLoad.readGlobalValue("Name");
+			//str = std::string(luaLoad);
+			//std::cout << "Value read form lua: " << str << std::endl;
+
 		luaLoad.readFromTable("Table","Int");
 		int TableVal = luaLoad;
 		std::cout << "Value read from lua Table: " << TableVal << std::endl;

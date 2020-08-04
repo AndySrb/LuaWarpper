@@ -1,4 +1,5 @@
 #include "luaLoader.h"
+#include <lua5.2/lua.h>
 
 luaLoader::luaLoader(lua_State *L)
 {
@@ -20,9 +21,13 @@ void luaLoader::readFromTable(const char *table, const char *value )
 	{
 		lua_pushstring(L,value);
 		lua_gettable(L, -2);
+		if (lua_isnoneornil(L,-1))
+			throw TABLE_VALUE_DOES_NOT_EXIST;
 		readValue();
 		lua_pop(L,1);
 	}
+	else 
+		throw TABLE_DOES_NOT_EXIST;
 
 }
 
@@ -32,6 +37,8 @@ void luaLoader::readGlobalValue(const char *value)
 	std::cout << "readGlobalValue(lua_State*, const char*) Looking For" << value;
 	#endif
 	lua_getglobal(L,value);
+	if (lua_isnoneornil(L,-1))
+		throw GLOBAL_VALUE_DOES_NOT_EXIST;
 	readValue();
 }
 

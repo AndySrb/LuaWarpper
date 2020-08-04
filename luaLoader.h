@@ -13,6 +13,7 @@ class luaLoader
 {
 	public:
 		enum L_ReturnType { NUMBER,BOOLEAN,STRING,NONE};
+		enum L_ReturnError { WRONG_RETURN_DATA_TYPE, GLOBAL_VALUE_DOES_NOT_EXIST, TABLE_DOES_NOT_EXIST, TABLE_VALUE_DOES_NOT_EXIST};
 		
 	private:
 		struct luaMemoryStack
@@ -60,7 +61,8 @@ class luaLoader
 			return m_temp.m_str;
 			}
 		std::cout << "[luaLoader] operator std::string(): return type is not string" << std::endl;
-		std::exit(0);
+		throw WRONG_RETURN_DATA_TYPE;
+		//std::exit(0);
 		}
 
 		operator float()
@@ -70,7 +72,8 @@ class luaLoader
 			return m_temp.m_float;
 		}
 		std::cout << "[luaLoader] operator float(): return type is not float" << std::endl;
-		std::exit(0);
+		throw WRONG_RETURN_DATA_TYPE;
+		//std::exit(0);
 		}
 
 		operator int()
@@ -81,7 +84,8 @@ class luaLoader
 			return (int)val;
 		}
 		std::cout << "[luaLoader] operator float(): return type is not float" << std::endl;
-		std::exit(0);
+		throw WRONG_RETURN_DATA_TYPE;
+		//std::exit(0);
 		}
 
 
@@ -93,7 +97,8 @@ class luaLoader
 			return val;
 		}
 		std::cout << "[luaLoader] operator float(): return type is not bool" << std::endl;
-		std::exit(0);
+		throw WRONG_RETURN_DATA_TYPE;
+		//std::exit(0);
 		}
 
 

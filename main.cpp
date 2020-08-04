@@ -63,6 +63,19 @@ int main(int argc, char* argv[])
 		luaLoad.readFromTable("Table","Int");
 		int TableVal = luaLoad;
 		std::cout << "Value read from lua Table: " << TableVal << std::endl;
+
+		//this is how to handle errors, you can see luaLoader.h to see all list of exceptions in enum L_ReturnError 
+		try
+		{
+			luaLoad.readFromTable("Table","Desc");
+			std::cout << std::string(luaLoad) << std::endl;
+		}
+		catch (luaLoader::L_ReturnError e)
+		{
+			std::cout << "Erorr caught" << std::endl;
+			if (e == luaLoader::L_ReturnError::TABLE_VALUE_DOES_NOT_EXIST)
+				std::cout << "caught: luaLoader::L_ReturnError::TABLE_VALUE_DOES_NOT_EXIST" << std::endl;
+		}
 	}
  
 

@@ -13,7 +13,12 @@ class luaLoader
 {
 	public:
 		enum L_ReturnType { NUMBER,BOOLEAN,STRING,NONE};
-		enum L_ReturnError { WRONG_RETURN_DATA_TYPE, GLOBAL_VALUE_DOES_NOT_EXIST, TABLE_DOES_NOT_EXIST, TABLE_VALUE_DOES_NOT_EXIST};
+		enum L_ReturnError { WRONG_RETURN_DATA_TYPE,
+			GLOBAL_VALUE_DOES_NOT_EXIST,
+			TABLE_DOES_NOT_EXIST,
+			TABLE_VALUE_DOES_NOT_EXIST,
+			ARRAY_DOES_NOT_EXIST
+		};
 		
 	private:
 		struct luaMemoryStack
@@ -45,6 +50,8 @@ class luaLoader
 
 		void readGlobalValue(const char *value);
 		void readFromTable(const char *table, const char *value);
+
+		size_t getArrayLen(const char *ArrayName);
 
 
 		//To get string after declarating it you have to use it like 

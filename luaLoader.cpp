@@ -1,4 +1,5 @@
 #include "luaLoader.h"
+#include <lua5.2/lauxlib.h>
 #include <lua5.2/lua.h>
 
 luaLoader::luaLoader(lua_State *L)
@@ -9,6 +10,18 @@ luaLoader::luaLoader(lua_State *L)
 	m_temp.m_type = L_ReturnType::NONE;
 }
 
+
+size_t luaLoader::getArrayLen(const char *ArrayName)
+{
+	lua_getglobal(L,ArrayName);
+	if(lua_istable(L,-1))
+	{
+		return lua_rawlen(L,-1);
+		
+	}
+	else
+		throw L_ReturnError::ARRAY_DOES_NOT_EXIST;
+}
 
 void luaLoader::readFromTable(const char *table, const char *value )
 {
@@ -78,7 +91,5 @@ void luaLoader::readValue()
 			std::cout << "[LUA] readValue(): BOOLEAN " << value << std::endl;
 		#endif
 	}
-
-
 }
 

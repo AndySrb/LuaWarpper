@@ -1,4 +1,3 @@
-// luaexample.cpp
 #include <iostream>
 #include <map>
 
@@ -76,6 +75,9 @@ int main(int argc, char* argv[])
 			if (e == luaLoader::L_ReturnError::TABLE_VALUE_DOES_NOT_EXIST)
 				std::cout << "caught: luaLoader::L_ReturnError::TABLE_VALUE_DOES_NOT_EXIST" << std::endl;
 		}
+
+		std::cout << "Number of elements in Table: " << luaLoad.getArrayLen("Array") << std::endl;
+
 	}
  
 

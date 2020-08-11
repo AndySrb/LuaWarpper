@@ -44,6 +44,27 @@ void luaLoader::readFromTable(const char *table, const char *value )
 
 }
 
+void luaLoader::readFromTable(const char *table, int value )
+{
+	#if DEBUG
+	std::cout << "readFormTable(lua_State*, const char*) Looking For" << table << "[" << value << "]" << std::endl;
+	#endif
+	lua_getglobal(L,table);
+
+	if (lua_istable(L,-1))
+	{
+		lua_pushinteger(L,value);
+		lua_gettable(L, -2);
+		if (lua_isnoneornil(L,-1))
+			throw TABLE_VALUE_DOES_NOT_EXIST;
+		readValue();
+		lua_pop(L,1);
+	}
+	else 
+		throw TABLE_DOES_NOT_EXIST;
+
+}
+
 void luaLoader::readGlobalValue(const char *value)
 {
 	#if DEBUG

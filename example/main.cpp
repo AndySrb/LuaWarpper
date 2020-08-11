@@ -9,7 +9,7 @@
 # include <lua5.2/lauxlib.h>
 #endif
 
-#include "luaLoader.h"
+#include "../luaLoader.h"
 
 template <class T>
 void MRKUSED(T)

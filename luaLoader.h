@@ -50,6 +50,7 @@ class luaLoader
 
 		void readGlobalValue(const char *value);
 		void readFromTable(const char *table, const char *value);
+		void readFromTable(const char *table, int value);
 
 		size_t getArrayLen(const char *ArrayName);
 

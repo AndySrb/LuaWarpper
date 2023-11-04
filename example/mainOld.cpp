@@ -1,12 +1,11 @@
 #include <iostream>
-#include <map>
 
 #ifdef __cplusplus
-# include <lua5.2/lua.hpp>
+# include <lua5.3/lua.hpp>
 #else
-# include <lua5.2/lua.h>
-# include <lua5.2/lualib.h>
-# include <lua5.2/lauxlib.h>
+# include <lua5.3/lua.h>
+# include <lua5.3/lualib.h>
+# include <lua5.3/lauxlib.h>
 #endif
 
 #include "../luaLoader.h"
@@ -83,6 +82,5 @@ int main(int argc, char* argv[])
 
 	// cleanup
 	lua_close(L);
-	std::cin.get(); // Use this insead std::system("")
 	return 0;
 }

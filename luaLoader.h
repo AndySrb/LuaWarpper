@@ -79,6 +79,8 @@ class luaLoader
 		};
 		
 	private:
+		bool m_classCreated = 0; // Is lua instance crated by class. This has use for deconstructor to know that should it close 
+								 // its instance.
 		struct luaMemoryStack
 		{
 			public:
@@ -108,11 +110,14 @@ class luaLoader
 	public:
 		~luaLoader()
 		{
-		lua_close(L);
+			if (m_classCreated)
+			{
+			lua_close(L);
+			}
 		}
 		luaLoader(lua_State *L);
 
-		luaLoader(std::string filename)
+		luaLoader(std::string filename) : m_classCreated{true}
 		{
 			m_filename = filename;
 			L = luaL_newstate(); //init new luastate

@@ -1,12 +1,13 @@
 #include <iostream>
-#include <map>
+#include <string>
+#include <vector>
 
 #ifdef __cplusplus
-# include <lua5.2/lua.hpp>
+# include <lua5.3/lua.hpp>
 #else
-# include <lua5.2/lua.h>
-# include <lua5.2/lualib.h>
-# include <lua5.2/lauxlib.h>
+# include <lua5.3/lua.h>
+# include <lua5.3/lualib.h>
+# include <lua5.3/lauxlib.h>
 #endif
 
 #include "../luaLoader.h"
@@ -25,10 +26,39 @@ bool CheckLua(lua_State *L, int r)
 	}
 	return true;
 }
-
-
 typedef luaLoader::L_ReturnType L_ReturnType;
 
+
+int luaAdd(lua_State *L, std::string func_name, int x, int y)
+{
+	int z;
+
+	lua_settop(L,0);
+	lua_getglobal(L, func_name.c_str());
+
+	lua_pushnumber(L, x);   // push 1st argument 
+	lua_pushnumber(L, y);   // push 2nd argument 
+
+	if (lua_pcall(L, 2, 1, 0) != 0)
+	{
+		std::string errormsg = lua_tostring(L, -1);
+		std::cout << "[ LUA_fileError ] CheckFileErrors():" << errormsg << std::endl;
+		return 0;
+	}
+
+	// retrieve result
+	if (!lua_isnumber(L, -1))
+	{
+		std::string errormsg = lua_tostring(L, -1);
+		std::cout << "[ LUA_fileError ] CheckFileErrors():" << errormsg << std::endl;
+		return 0;
+	}
+
+	z = lua_tonumber(L, -1);
+	lua_pop(L, 1); // pop returned value
+	lua_settop(L,0);
+	return z;
+}
 
 int main(int argc, char* argv[])
 {
@@ -36,13 +66,8 @@ int main(int argc, char* argv[])
 	MRKUSED(argv);
 
 	std::string filename = "LuaFiles.lua";
-
-	// initialization
-	lua_State *L = luaL_newstate();
-	luaL_openlibs(L);
-
-	luaLoader luaLoad(L);
-	if (CheckLua(L,luaL_dofile(L,filename.c_str())))
+	luaLoader luaLoad(filename);
+	if (luaLoad.CheckFileErrors())
 	{
 		luaLoad.readGlobalValue("intVal");
 		int val = luaLoad;
@@ -78,11 +103,37 @@ int main(int argc, char* argv[])
 
 		std::cout << "Number of elements in Table: " << luaLoad.getArrayLen("Array") << std::endl;
 
+		std::cout << "LuaFunction(add) : " << luaAdd(luaLoad.getLuaState(),"add",2,3) << std::endl;
+		
+		std::vector<luaLoader::luaPushStack> push;
+		luaLoader::luaPushStack arg1(2.2);
+		luaLoader::luaPushStack arg2(8.0);
+		push.push_back(arg1);
+		push.push_back(arg2);
+
+		luaLoad.execFunction("add",push);
+		std::cout << "LuaClassFunction(add) : " << float(luaLoad) << std::endl;
+		push.clear();
+
+
+		luaLoader::luaPushStack arg3(false);
+		push.push_back(arg3);
+		luaLoad.execFunction("check", push);
+		std::cout << "LuaClassFunction(check) : " << std::string(luaLoad) << std::endl;
+		push.clear();
+		
+		luaLoad.pushFunctionArguments(true);
+		luaLoad.execFunction("check");
+		std::cout << "LuaClassFunction(check) : " << std::string(luaLoad) << std::endl;
+
+		luaLoad.pushFunctionArguments("constChar");
+		luaLoad.execFunction("string");
+		std::cout << "LuaClassFunction(string) : " << std::string(luaLoad) << std::endl;
+
 	}
- 
 
 	// cleanup
-	lua_close(L);
+	//lua_close(L);
 	std::cin.get(); // Use this insead std::system("")
 	return 0;
 }

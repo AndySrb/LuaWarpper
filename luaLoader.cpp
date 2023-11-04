@@ -1,6 +1,4 @@
 #include "luaLoader.h"
-#include <lua5.2/lauxlib.h>
-#include <lua5.2/lua.h>
 
 luaLoader::luaLoader(lua_State *L)
 {
@@ -113,4 +111,98 @@ void luaLoader::readValue()
 		#endif
 	}
 }
+
+void luaLoader::execFunction(std::string func_name,std::vector<luaPushStack> &push )
+	{
+
+		lua_settop(L,0);
+		lua_getglobal(L, func_name.c_str());
+		// Push Arguments
+		for (size_t i = 0; i < push.size(); i++)
+		{
+			switch (push[i].tag)
+			{
+				case L_ReturnType::BOOLEAN:
+					lua_pushboolean(this->L,push[i].boolStack);
+					//std::cout << "Pushed " << push[i].boolStack << std::endl;
+					break;
+				case L_ReturnType::NUMBER:
+					lua_pushnumber(this->L,(double)push[i].doubleStack);
+					//std::cout << "Pushed " << push[i].doubleStack << std::endl;
+					break;
+				case L_ReturnType::STRING:
+					lua_pushstring(this->L,push[i].stringStack);
+					break;
+				case L_ReturnType::NONE:
+					break;
+				default:
+					std::cout << "Problem" << std::endl;
+
+			}
+		}
+	//Call lua file function
+	if (lua_pcall(L, push.size(), 1, 0) != 0)
+	{
+		std::string errormsg = lua_tostring(L, -1);
+		std::cout << "[ Lua ] FUNCTION_ERROR CheckFileErrors():" << errormsg << std::endl;
+		throw FUNCTION_ERROR;
+		return;
+	}
+
+	// retrieve result
+	readValue();
+	}
+
+void luaLoader::execFunction(std::string func_name)
+{
+		lua_settop(L,0);
+		lua_getglobal(L, func_name.c_str());
+		// Push Arguments
+		for (size_t i = 0; i < m_functionArguments.size(); i++)
+		{
+			switch (m_functionArguments[i].tag)
+			{
+				case L_ReturnType::BOOLEAN:
+					lua_pushboolean(this->L,m_functionArguments[i].boolStack);
+					//std::cout << "Pushed " << push[i].boolStack << std::endl;
+					break;
+				case L_ReturnType::NUMBER:
+					lua_pushnumber(this->L,(double)m_functionArguments[i].doubleStack);
+					//std::cout << "Pushed " << push[i].doubleStack << std::endl;
+					break;
+				case L_ReturnType::STRING:
+					lua_pushstring(this->L,m_functionArguments[i].stringStack);
+					break;
+				case L_ReturnType::NONE:
+					break;
+				default:
+					std::cout << "Problem" << std::endl;
+			}
+		}
+	//Call lua file function
+	if (lua_pcall(L, m_functionArguments.size(), 1, 0) != 0)
+	{
+		std::string errormsg = lua_tostring(L, -1);
+		std::cout << "[ Lua ] FUNCTION_ERROR CheckFileErrors():" << errormsg << std::endl;
+		throw FUNCTION_ERROR;
+		return;
+	}
+
+	// retrieve result
+	readValue();
+	clearFunctionArguments();
+}
+
+bool luaLoader::CheckFileErrors()
+{
+	int r = luaL_dofile(L,m_filename.c_str());
+	if(r != LUA_OK)
+	{
+	std::string errormsg = lua_tostring(L, -1);
+	std::cout << "[ LUA_fileError ] CheckFileErrors():" << errormsg << std::endl;
+	return false;
+	}
+	return true;
+}
+
 

@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
 	luaLoader luaLoad(filename);
 	if (luaLoad.CheckFileErrors())
 	{
+
 		luaLoad.readGlobalValue("intVal");
 		int val = luaLoad;
 		std::cout << "Value read form lua: " << val << std::endl;
@@ -103,29 +104,47 @@ int main(int argc, char* argv[])
 
 		std::cout << "Number of elements in Table: " << luaLoad.getArrayLen("Array") << std::endl;
 
+
+		//luaLoader::getLuaState() returns insance on wich it works so you can do lowlevel calls on your own.
+
+
+		//Here is example lua function we want to call via function, Check function LuaLoad in this file.
+		//function add(x,y)
+		//	return x + y;
+		//end
+		// 
 		std::cout << "LuaFunction(add) : " << luaAdd(luaLoad.getLuaState(),"add",2,3) << std::endl;
-		
-		std::vector<luaLoader::luaPushStack> push;
-		luaLoader::luaPushStack arg1(2.2);
-		luaLoader::luaPushStack arg2(8.0);
-		push.push_back(arg1);
-		push.push_back(arg2);
-
-		luaLoad.execFunction("add",push);
-		std::cout << "LuaClassFunction(add) : " << float(luaLoad) << std::endl;
-		push.clear();
 
 
+		//function add(x,y)
+		//	return x + y;
+		//end
+		//Here we use luaPushStack that in witch we insert our arguments for function for example
+		std::vector<luaLoader::luaPushStack> push; // vector that holds argments in order
+		luaLoader::luaPushStack arg1(2.2); //first argument x
+		luaLoader::luaPushStack arg2(8.0); //seccond argument y
+		push.push_back(arg1); // pushing x
+		push.push_back(arg2); // pushing y
+		luaLoad.execFunction("add",push); // execute function
+		std::cout << "LuaClassFunction(add) : " << float(luaLoad) << std::endl; // Print out resoult
+		push.clear(); //Clear vector
+
+		// Here is another example
+		//function check(x)
+		//	if x == true then return "trueString" else return "falseString" end
+		//end
 		luaLoader::luaPushStack arg3(false);
 		push.push_back(arg3);
 		luaLoad.execFunction("check", push);
 		std::cout << "LuaClassFunction(check) : " << std::string(luaLoad) << std::endl;
 		push.clear();
 		
-		luaLoad.pushFunctionArguments(true);
-		luaLoad.execFunction("check");
-		std::cout << "LuaClassFunction(check) : " << std::string(luaLoad) << std::endl;
+		//Here is passing function arguments via class function.
+		luaLoad.pushFunctionArguments(true); // Pass argument
+		luaLoad.execFunction("check"); // Execute function
+		std::cout << "LuaClassFunction(check) : " << std::string(luaLoad) << std::endl; //display resoult
 
+		//Another example
 		luaLoad.pushFunctionArguments("constChar");
 		luaLoad.execFunction("string");
 		std::cout << "LuaClassFunction(string) : " << std::string(luaLoad) << std::endl;
